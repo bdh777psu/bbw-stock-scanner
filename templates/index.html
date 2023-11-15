@@ -1,0 +1,93 @@
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.min.css">
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+        <link rel="stylesheet" type="text/css" href="/static/form.css">
+
+        <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>Bollinger Bands Width Stock Scanner - NYSE, NASDAQ & B3 (Brazil)</title>
+    </head>
+    <body>
+        <h1>Bollinger Bands Width Stock Scanner</h1>
+        <h3>NYSE, NASDAQ & BMFBOVESPA-B3 (Brazil)</h3>
+        <br>
+        
+        <form class="form-inline" action="/" method="POST">
+            <label for="exhanges">Target exhange:</label> 
+            <select name="exchanges">
+                {% for exchange in exchanges %}
+                    <option value="{{ exchange }}">{{ exchange }}</option>
+                {% endfor %}
+            </select>
+            <label for="intervals">Interval:</label> 
+            <select name="intervals">
+                {% for interval in intervals %}
+                    <option value="{{ interval }}">{{ interval }}</option>
+                {% endfor %}
+            </select>
+            <input type="number" name="bbw" step="0.001" placeholder="Lookup BB width" id="bbw" required="required">
+            <input type="submit" value="Scan"/>
+        </form>
+
+        <table id="stocksTable" class="paleBlueRows" style="height: 100px; background-color: #1d1d26; " width="400" >
+            <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Bollinger Width</th>
+                <th>Price</th>
+                <th>% price change</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for symbol, value in stock_symbols.items() %}
+                    <tr>
+                        {% set ticker = symbol.split(':') %}
+                        <td>
+                            <a href="http://www.tradingview.com/chart/?symbol={{ ticker[1] }}" target="_blank">    
+                                <div style="height:100%;width:100%">
+                                    {{ ticker[1] }}
+                                </div>
+                            </a>
+                        </td>
+                        <td>{{ value[0] }}</td>
+                        <td>{{ value[1] }}</td>
+                        <td>{{ value[2] }} %</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- jQuery Library -->
+        <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <!-- DataTables Script -->
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+        <script>
+        $(document).ready( function () {
+            var table = $('#stocksTable').DataTable({
+                "lengthMenu": [[10, 25, 50, -1], [10 , 25, 50, "Show all"]],
+                "displayLength": 10,
+                "language": {
+                    "lengthMenu": "_MENU_",
+                },
+                "drawCallback": function(settings) {
+                    $('.paginate_button').css({
+                        'color': '#ffffff',
+                        'font-weight': 'bold',
+                        'font-size': '16px'
+                    });
+                }
+            });
+        });
+        </script>
+
+        <script>
+            $(document).ready( function () {
+                $('#stocksTable').DataTable();
+            } );
+        </script>
+    </body>
+</html>
