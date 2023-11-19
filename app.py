@@ -36,6 +36,7 @@ def scan():
     calculate_bbw(analysis, input_bbw)
     calculate_current_price(analysis)
     calculate_price_change(analysis)
+    recommend_symbols(analysis)
 
     return render_template('index.html', exchanges=exchanges, stock_symbols=filtered_symbols, intervals=intervals)
 
@@ -115,6 +116,20 @@ def calculate_price_change(analysis_dict):
             print(symbol, "is not defined!")
         except ZeroDivisionError:
             print(symbol, "Opening price set to zero value!")
+
+
+def recommend_symbols(analysis_dict) -> int:
+    """Filters for recomendations"""        
+    for symbol, value in analysis_dict.items():
+
+        try:
+            recommendation = value.summary["RECOMMENDATION"]
+        
+            filtered_symbols[symbol].append(recommendation.replace('_', ' '))
+        except AttributeError:
+            print(symbol, "does not have associated recommendation!")
+        except KeyError:
+            print(symbol, "is not defined!")
 
 
 @app.errorhandler(404)
