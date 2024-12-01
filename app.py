@@ -1,12 +1,15 @@
 from flask import Flask, render_template, request
 import tradingview_ta as tv_ta
+from binance.spot import Spot as Client
 import os
 
 
 app = Flask(__name__)
 
+client = Client()
+
 symbols_dir = 'exchanges/'
-exchanges = ["NYSE", "NASDAQ", "BMFBOVESPA"]
+exchanges = ["NYSE", "NASDAQ", "BMFBOVESPA", "BINANCE"]
 intervals = ["5m" ,"15m", "30m", "1h", "2h", "4h", "1d", "1W", "1M"]
 
 filtered_symbols = {}
@@ -42,22 +45,44 @@ def scan():
 
 
 def open_file(exchange):
-    """Returns the stock ticker symbols available for the chosen exchange"""
-    exchange_file = symbols_dir + exchange + ".txt"
+    """Returns the ticker symbols available for the chosen exchange"""
+    if exchange != "BINANCE":
+        exchange_file = symbols_dir + exchange + ".txt"
 
-    try:
-        with open(exchange_file) as file:
-            stock_symbols = file.read()
-            file.close
-                
-            return stock_symbols.split('\n')
-    except:
-        print("Something went wrong: Unable to read file!")
+        try:
+            with open(exchange_file) as file:
+                stock_symbols = file.read()
+                file.close
+                    
+                return stock_symbols.split('\n')
+        except:
+            print("Something went wrong: Unable to read file!")
+    else:
+        exchange_info = client.exchange_info()
+        exchange_pairs = set()
+        pairs = str()
 
+        for s in exchange_info['symbols']:
+            if s['symbol'].endswith('USDT'):
+                exchange_pairs.add('BINANCE:' + s['symbol'])
+        
+        for pair in exchange_pairs:
+            pairs += pair + '\n'
+
+        return pairs[:-1].split('\n')
 
 def symbol_analysis(exchange, interval, symbols):
     """Returns a dictionary of a TradingView analysis of multiple stocks at once"""
-    screener = "brazil" if exchange == "BMFBOVESPA" else "america"
+    match exchange:
+        case "NYSE":
+            screener = "america"
+        case "NASDAQ":
+            screener = "america"
+        case "BMFBOVESPA":
+            screener = "brazil"
+        case "BINANCE":
+            screener = "crypto"
+
     return tv_ta.get_multiple_analysis(screener=screener, interval=interval, symbols=symbols)
 
 
