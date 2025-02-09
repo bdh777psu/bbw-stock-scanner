@@ -1,5 +1,5 @@
-# Bollinger Bands Width - Crypto & Stock Scanner for NYSE, NASDAQ, B3 (Brazil), Binance and BingX
-The Bollinger Bands Width Stock Scanner is a technical analysis tool that can be used to identify potential price breakouts or breakdowns for (almost) all stocks at once on select exchanges (NYSE, NASDAQ & B3 in Brazil, Binance and BingX): By entering the desired value into the tool, one can filter out for stocks with tight prices that are about to rise or fall.
+# Bollinger Bands Width - Crypto & Stock Scanner
+This is a technical analysis tool that can be used to identify potential price breakouts or breakdowns for (almost) all stocks at once on select exchanges (NYSE, NASDAQ & B3 in Brazil, and Binance): By entering the desired value into the tool, one can filter out for stocks with tight prices that are about to rise or fall.
 
 Find out more about using Bollinger Bands Width alongside your trading strategies here:
 https://www.tradingview.com/support/solutions/43000501972-bollinger-bands-width-bbw/

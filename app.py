@@ -1,17 +1,15 @@
 from flask import Flask, render_template, request
 import tradingview_ta as tv_ta
 from binance.spot import Spot as Client
-from bingX.spot import Spot
 import os
 
 
 app = Flask(__name__)
 
-binanceClient = Client()
-bingXclient = Spot("","")
+client = Client()
 
 symbols_dir = 'exchanges/'
-exchanges = ["NYSE", "NASDAQ", "BMFBOVESPA", "BINANCE", "BINGX"]
+exchanges = ["NYSE", "NASDAQ", "B3", "BINANCE"]
 intervals = ["5m" ,"15m", "30m", "1h", "2h", "4h", "1d", "1W", "1M"]
 
 filtered_symbols = {}
@@ -48,7 +46,7 @@ def scan():
 
 def open_file(exchange):
     """Returns the ticker symbols available for the chosen exchange"""
-    if exchange != "BINANCE" or exchange != "BINGX":
+    if exchange != "BINANCE":
         exchange_file = symbols_dir + exchange + ".txt"
 
         try:
@@ -59,8 +57,8 @@ def open_file(exchange):
                 return stock_symbols.split('\n')
         except:
             print("Something went wrong: Unable to read file!")
-    elif exchange == "BINANCE":
-        exchange_info = binanceClient.exchange_info()
+    else:
+        exchange_info = client.exchange_info()
         exchange_pairs = set()
         pairs = str()
 
@@ -72,20 +70,6 @@ def open_file(exchange):
             pairs += pair + '\n'
 
         return pairs[:-1].split('\n')
-    elif exchange == "BINGX":
-        exchange_info = bingXclient.symbols()
-        exchange_pairs = set()
-        pairs = str()
-
-        for s in exchange_info['symbols']:
-            if s['symbol'].endswith('USDT'):
-                exchange_pairs.add('BINGX:' + s['symbol'])
-        
-        for pair in exchange_pairs:
-            pairs += pair + '\n'
-
-        return pairs[:-1].split('\n')
-
 
 def symbol_analysis(exchange, interval, symbols):
     """Returns a dictionary of a TradingView analysis of multiple stocks at once"""
@@ -94,11 +78,9 @@ def symbol_analysis(exchange, interval, symbols):
             screener = "america"
         case "NASDAQ":
             screener = "america"
-        case "BMFBOVESPA":
+        case "B3":
             screener = "brazil"
         case "BINANCE":
-            screener = "crypto"
-        case "BINGX":
             screener = "crypto"
 
     return tv_ta.get_multiple_analysis(screener=screener, interval=interval, symbols=symbols)
