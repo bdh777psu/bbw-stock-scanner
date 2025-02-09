@@ -9,7 +9,7 @@ app = Flask(__name__)
 client = Client()
 
 symbols_dir = 'exchanges/'
-exchanges = ["NYSE", "NASDAQ", "BMFBOVESPA", "BINANCE"]
+exchanges = ["NYSE", "NASDAQ", "B3", "BINANCE"]
 intervals = ["5m" ,"15m", "30m", "1h", "2h", "4h", "1d", "1W", "1M"]
 
 filtered_symbols = {}
@@ -78,7 +78,7 @@ def symbol_analysis(exchange, interval, symbols):
             screener = "america"
         case "NASDAQ":
             screener = "america"
-        case "BMFBOVESPA":
+        case "B3":
             screener = "brazil"
         case "BINANCE":
             screener = "crypto"
